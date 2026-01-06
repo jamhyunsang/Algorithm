@@ -20,52 +20,53 @@ vector<string> Split(string& str, char delimiter)
     return result;
 }
 
-vector<int> solution(vector<string> operations)
+int ConvertToInt(string s)
 {
-    vector<int> answer;
+	return stoi(s);
+}
 
-    deque<int> queue;
+vector<int> solution(vector<string> operations) {
+    vector<int> queue;
 
-    for (int count = 0; count < operations.size(); count++)
+    for (size_t s = 0; s < operations.size(); s++)
     {
-        vector<string> split = Split(operations[count], ' ');
+        vector<string> order = Split(operations[s], ' ');
 
-        switch (split[0][0])
+        if (order[0] == "I")
         {
-        case 'I':
-        {
-            queue.push_back(stoi(split[1]));
+            queue.push_back(ConvertToInt(order[1]));
         }
-        break;
-        case 'D':
+        else if (order[0] == "D")
         {
-            if (!queue.empty())
+            if (queue.empty())
+                continue;
+            if (order[1] == "1")
             {
-                sort(queue.begin(), queue.end());
-                if (split[1] == "1")
-                {
-                    queue.pop_back();
-                }
-                else
-                {
-                    queue.pop_front();
-                }
+                auto max = max_element(queue.begin(), queue.end());
+                queue.erase(max);
             }
-        }
-        break;
-        }
+            else if (order[1] == "-1")
+            {
+                auto minIter = min_element(queue.begin(), queue.end());
+                queue.erase(minIter);
+            }
+		}
     }
+
+    vector<int> answer;
 
     if (queue.empty())
     {
-        answer = { 0,0 };
+        answer.push_back(0);
+        answer.push_back(0);
     }
     else
     {
-        sort(queue.begin(), queue.end());
-        answer.push_back(queue.back());
-        answer.push_back(queue.front());
-    }
+        auto max = max_element(queue.begin(), queue.end());
+        auto min = min_element(queue.begin(), queue.end());
+        answer.push_back(*max);
+        answer.push_back(*min);
+	}
 
     return answer;
 }
